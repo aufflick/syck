@@ -5,3 +5,5 @@ The YAML project should work in XCode without any alterations. It builds a stati
 Included is Kyle Hammond's very good Base64 code to handle data in YAML. Currently Altivec is disabled in his code, if you want to enable it change the COMPILE_FOR_ALTIVEC define at the top of GSNSDataExtensions.m.
 
 If you have any problems/queries contact will@thimbleby.net
+
+See http://will.thimbleby.net/yaml-in-cocoa/
