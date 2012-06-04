@@ -1,8 +1,15 @@
 #! /bin/sh
 
+libtoolize=libtoolize
+uname=`uname`
+if [ "$uname" == "Darwin" ]
+then
+    libtoolize=glibtoolize
+fi
+
 set -x
 aclocal
 autoheader
 autoconf
-libtoolize
+$libtoolize
 automake --foreign --add-missing --copy
