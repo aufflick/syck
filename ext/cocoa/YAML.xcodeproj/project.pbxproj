@@ -153,7 +153,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5611607C1283DDE800F01AD0 /* Build configuration list for PBXNativeTarget "YAML" */;
 			buildPhases = (
-				3A811AF412AE869C00BC08AE /* ShellScript */,
+				3A811AF412AE869C00BC08AE /* Configure & Build fat libsyck.a */,
 				8DC2EF500486A6940098B216 /* Headers */,
 				8DC2EF520486A6940098B216 /* Resources */,
 				8DC2EF540486A6940098B216 /* Sources */,
@@ -217,7 +217,7 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3A811AF412AE869C00BC08AE /* ShellScript */ = {
+		3A811AF412AE869C00BC08AE /* Configure & Build fat libsyck.a */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -225,12 +225,13 @@
 			inputPaths = (
 				"$(SRCROOT)/../../lib/syck.h",
 			);
+			name = "Configure & Build fat libsyck.a";
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/libsyck/libsyck.a",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "export YACC=\"\" # yacc/bison with Xcode 3.2.4 is broken\ncd ../.. || exit $?\nNARCHS=0\nLIPO_INFILES=\n\nfor ARCH in $ARCHS; do\n  CFLAGS=\"$CFLAGS -arch $ARCH\" ./configure || exit $?\n  make clean || exit $?\n  make || exit $?\n  mv -f lib/libsyck.a lib/libsyck-$ARCH.a\n  LIPO_INFILES=\"$LIPO_INFILES lib/libsyck-$ARCH.a\"\n  NARCHS=$(expr $NARCHS + 1)\ndone\n\nmkdir -p \"$DERIVED_FILE_DIR/libsyck\" || exit $?\nDST_PATH=\"$DERIVED_FILE_DIR/libsyck/libsyck.a\"\nif [ $NARCHS -gt 1 ]; then\n  lipo $LIPO_INFILES -output \"$DST_PATH\" -create || exit $?\nelse\n  mv -f lib/libsyck-$ARCH.a \"$DST_PATH\"\nfi\necho \"Created $ARCHS libsyck.a at $DST_PATH\"\n";
+			shellScript = "set -x\n\nDST_PATH=\"$DERIVED_FILE_DIR/libsyck/libsyck.a\"\n\n# this means you need to do a clean build if you change the syck code or architectures etc.\n# TODO: if this script was instead a makefile it could be based on proper dependencies\nif ! [ -f \"$DST_PATH\" ]\nthen\n\nexport YACC=\"\" # yacc/bison with Xcode 3.2.4 is broken\ncd ../.. || exit $?\nNARCHS=0\nLIPO_INFILES=\n\nif ! [ -f ./configure ]\nthen\n  # assuming homebrew or macports can supply autoconf if the installed version of Developer Tools can't\n  mkdir -p m4\n  PATH=/usr/local/bin:/opt/local/bin:$PATH autoreconf -i\n  PATH=/usr/local/bin:/opt/local/bin:$PATH ./bootstrap\nfi\n\nfor ARCH in $ARCHS; do\n  CFLAGS=\"$CFLAGS -arch $ARCH\" ./configure || exit $?\n  make clean || exit $?\n  make || exit $?\n  mv -f lib/libsyck.a lib/libsyck-$ARCH.a\n  LIPO_INFILES=\"$LIPO_INFILES lib/libsyck-$ARCH.a\"\n  NARCHS=$(expr $NARCHS + 1)\ndone\n\nmkdir -p \"$DERIVED_FILE_DIR/libsyck\" || exit $?\nif [ $NARCHS -gt 1 ]; then\n  lipo $LIPO_INFILES -output \"$DST_PATH\" -create || exit $?\nelse\n  mv -f lib/libsyck-$ARCH.a \"$DST_PATH\"\nfi\necho \"Created $ARCHS libsyck.a at $DST_PATH\"\n\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -291,7 +292,8 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				HEADER_SEARCH_PATHS = ../../lib;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(DERIVED_FILE_DIR)/libsyck";
 				LIBRARY_STYLE = Dynamic;
 				MACH_O_TYPE = mh_dylib;
@@ -333,7 +335,8 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				HEADER_SEARCH_PATHS = ../../lib;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(DERIVED_FILE_DIR)/libsyck";
 				LIBRARY_STYLE = Dynamic;
 				MACH_O_TYPE = mh_dylib;
@@ -372,7 +375,8 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				HEADER_SEARCH_PATHS = ../../lib;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(DERIVED_FILE_DIR)/libsyck";
 				LIBRARY_STYLE = Dynamic;
 				MACH_O_TYPE = mh_dylib;
