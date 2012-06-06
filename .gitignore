@@ -1,8 +1,10 @@
 xcuserdata
 *.lo
 *.o
-*.a
 *.la
+lib/.libs/libsyck.a
+lib/libsyck-i386.a
+lib/libsyck-x86_64.a
 Makefile
 config.h
 config.log
