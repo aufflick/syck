@@ -9,6 +9,8 @@ void cocoa_syck_error_handler( SyckParser *p, const char *msg )
 	NSLog(@"syck error:%s position:(%d, %ld)", msg, p->linect, p->cursor - p->lineptr);
 }
 
+static NSString * const SyckInputMergeConst = @"MERGE";
+
 SYMID cocoa_syck_parse_handler(SyckParser *p, SyckNode *n)
 {
     SYMID oid;
@@ -157,7 +159,7 @@ SYMID cocoa_syck_parse_handler(SyckParser *p, SyckNode *n)
 #endif
             else if ( strncmp( type_id, "merge", 5 ) == 0 )
             {
-                v = @"MERGE"; //rely on constants being the same
+                v = SyckInputMergeConst;
             }
             else
             {
@@ -194,7 +196,7 @@ SYMID cocoa_syck_parse_handler(SyckParser *p, SyckNode *n)
                 oid = syck_map_read( n, map_value, i );
                 syck_lookup_sym( p, oid, (char **)&o3 );
 				
-				if(o2 == @"MERGE")
+				if(o2 == SyckInputMergeConst)
 				{
 					if([o3 isKindOfClass:[NSDictionary class]])
 						[v addEntriesFromDictionary:o3];
